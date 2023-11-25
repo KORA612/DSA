@@ -1,0 +1,12 @@
+t=0
+for (int i = 0; i < m; i++) // m bar tekrar mishe
+{
+    for (int j = 0; j < a[i]; j++) // S bar tekrar mishe
+    {
+        t=t+1
+    } 
+}
+
+GOZINE 4
+
+ΣmΣs = O(S*m)
