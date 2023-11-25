@@ -9,4 +9,4 @@ for (int i = 0; i < m; i++) // m bar tekrar mishe
 
 GOZINE 4
 
-ΣmΣs = O(S*m)
+Σ(0 ta m) Σ(0 ta i) 1 = O(S*m)
