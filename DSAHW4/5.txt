@@ -1,0 +1,22 @@
+YES
+
+To inverse Q1 and save it in an empty queue named Q2 we can simply do:
+for (Q1.size())
+    Q2.enQueue(Q1.deQueue());
+
+Step by Step :
+0:
+    Q1 : f-> 1 | 2 | 3 | 4 <-r
+    Q2 : <-r f-> 
+1:
+    Q1 : f-> 2 | 3 | 4 <-r
+    Q2 : f-> 1 <-r
+2:
+    Q1 : f-> 3 | 4 <-r
+    Q2 : f-> 2 | 1 <-r
+3:
+    Q1 : f-> 4 <-r
+    Q2 : f-> 3 | 2 | 1 <-r
+4:
+    Q1 : <-r f-> 
+    Q2 : f-> 4 | 3 | 2 | 1 <-r
