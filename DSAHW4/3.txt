@@ -1,1 +1,5 @@
-?????
+We can use an integer varianle called < counter > 
+Whenever we push an element to each of queues -> counter++
+Whenever we pop an element from each of queues -> counter--
+if counter >= 100 -> "FULL"
+To minimize memory usage we can use (dynamic arrays in python) or (vectors in cpp).
