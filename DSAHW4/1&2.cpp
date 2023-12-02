@@ -102,12 +102,10 @@ int main()
     q1.enPriorityQueue(7);
     q1.enPriorityQueue(0);
     q1.printPriorityQueue();
-
-    cout << q1.dePriorityQueue() << " ";
-    cout << q1.dePriorityQueue() << " ";
-    cout << q1.dePriorityQueue() << " ";
-    cout << q1.dePriorityQueue() << " ";
-    cout << q1.dePriorityQueue() << " ";
+    for (int i = 0; i < 5; i++)
+    {
+        cout << q1.dePriorityQueue() << " ";
+    }
 }
 
-// O(2n) = O (n);
+// O( n * ( n + n ) ) = O (n^2);
