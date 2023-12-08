@@ -1,15 +1,14 @@
 #include <iostream>
 #include <cstring>
+#include <cmath>
 using namespace std;
 
 class BigNumber
 {
 private:
-    int len;
+    long long int len;
     int *arr;
     bool sign;
-
-    void clean();
 
 public:
     // Constructors :
@@ -23,15 +22,16 @@ public:
     // Destructor :
     ~BigNumber();
 
+    // Output :
     void print();
 
-    BigNumber shiftL();
-    BigNumber shiftL(int);
-    BigNumber shiftR();
-    BigNumber shiftR(int);
+    // Shifts :
+    BigNumber shift_Left();
+    BigNumber shift_Left(int);
+    BigNumber shift_Right();
+    BigNumber shift_Right(int);
 
-    friend bool isNull(const BigNumber &);
-
+    // Mathematical Operators :
     friend BigNumber operator+(const BigNumber &, const BigNumber &);
     friend BigNumber operator-(const BigNumber &, const BigNumber &);
     friend BigNumber operator*(const BigNumber &, const BigNumber &);
@@ -39,10 +39,17 @@ public:
     friend BigNumber operator/(const BigNumber &, const BigNumber &);
     friend BigNumber operator^(const BigNumber &, const BigNumber &);
 
+    // Comparison Operators :
     friend bool operator==(const BigNumber &, const BigNumber &);
     friend bool operator>(const BigNumber &, const BigNumber &);
     friend bool operator<(const BigNumber &, const BigNumber &);
+
+    // Tools
+    friend bool isNull(const BigNumber &);
+    friend void clean(BigNumber &);
 };
+
+// Constructors :
 
 BigNumber::BigNumber()
 {
@@ -95,6 +102,9 @@ BigNumber::BigNumber(int num)
         num /= 10;
     }
 }
+
+// Copy constructor :
+
 BigNumber::BigNumber(const BigNumber &other)
 {
     len = other.len;
@@ -104,23 +114,32 @@ BigNumber::BigNumber(const BigNumber &other)
     for (int i = 0; i < len; ++i)
         arr[i] = other.arr[i];
 }
+
+// Destructor :
+
 BigNumber::~BigNumber()
 {
     delete[] arr;
 }
+
+// Output :
+
 void BigNumber::print()
 {
     if (sign)
-        cout<<"- ";
+        cout << "- ";
     else
-        cout<<"+ ";
-    
+        cout << "+ ";
+
     for (int i = 0; i < len; i++)
     {
         cout << arr[i] << " ";
     }
     cout << endl;
 }
+
+// Add :
+
 BigNumber operator+(const BigNumber &first, const BigNumber &second)
 {
     BigNumber temp;
@@ -209,13 +228,16 @@ BigNumber operator+(const BigNumber &first, const BigNumber &second)
         ++i;
     }
 
-    temp.clean();
+    clean(temp);
     return temp;
 }
+
+// Minus :
+
 BigNumber operator-(const BigNumber &first, const BigNumber &second)
 {
 
-    if (!first.sign && second.sign)
+    if (!first.sign && second.sign) // + - -> +
     {
         BigNumber temp = second;
         temp.sign = 0;
@@ -223,7 +245,7 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
         return temp;
     }
 
-    else if (first.sign && !second.sign)
+    else if (first.sign && !second.sign) // - + -> -
     {
         BigNumber temp = first;
         temp.sign = 0;
@@ -248,7 +270,7 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
     AbsoluteFirst.sign = 0;
     AbsoluteSecond.sign = 0;
 
-    if (AbsoluteFirst > AbsoluteSecond && !(first.sign && second.sign))
+    if (AbsoluteFirst > AbsoluteSecond && !(first.sign && second.sign)) // ++
     {
         temp.sign = 0;
         for (int i = 1; i <= max; ++i)
@@ -269,7 +291,7 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
         }
     }
 
-    if (AbsoluteFirst > AbsoluteSecond && (first.sign && second.sign))
+    if (AbsoluteFirst > AbsoluteSecond && (first.sign && second.sign)) // --
     {
         temp.sign = 1;
         for (int i = 1; i <= max; ++i)
@@ -290,7 +312,7 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
         }
     }
 
-    if (AbsoluteFirst < AbsoluteSecond && !(first.sign && second.sign))
+    if (AbsoluteFirst < AbsoluteSecond && !(first.sign && second.sign)) // ++
     {
         temp.sign = 1;
         for (int i = 1; i <= max; ++i)
@@ -311,7 +333,7 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
         }
     }
 
-    if (AbsoluteFirst < AbsoluteSecond && (first.sign && second.sign))
+    if (AbsoluteFirst < AbsoluteSecond && (first.sign && second.sign)) // --
     {
         temp.sign = 0;
         for (int i = 1; i <= max; ++i)
@@ -339,41 +361,83 @@ BigNumber operator-(const BigNumber &first, const BigNumber &second)
         temp.arr[0] = 0;
     }
 
-    temp.clean();
+    clean(temp);
     return temp;
 }
 
-// multiplication
+// Multiplication :
+
 BigNumber operator*(const BigNumber &first, const BigNumber &second)
 {
+    BigNumber AbsoluteFirst = first, AbsoluteSecond = second, res1;
+    bool flag = true;
+    if (AbsoluteFirst.sign && AbsoluteSecond.sign)
+        flag = true;
+    else if (AbsoluteFirst.sign || AbsoluteSecond.sign)
+        flag = false;
+    AbsoluteFirst.sign = true;
+    AbsoluteSecond.sign = true;
 
-    BigNumber temp1;
-    temp1.len = first.len + second.len;
-    temp1.arr = new int[temp1.len];
-    memset(temp1.arr, 0, temp1.len);
-
-    BigNumber tempother = first;
-    tempother.sign = 0;
-
-    BigNumber temp2 = temp1;
-
-    if (isNull(first) || isNull(second))
-        return 0;
-
-    if ((first.sign && !second.sign) || (!first.sign && second.sign))
-        temp2.sign = 1;
+    if (AbsoluteFirst > AbsoluteSecond)
+    {
+        long long int carry = 0;
+        for (long long int i = AbsoluteSecond.len - 1; i >= 0; i--)
+        {
+            string tmp;
+            long long int s = AbsoluteSecond.len - 1 - i;
+            while (s > 0)
+            {
+                tmp.append("0");
+                s--;
+            }
+            for (long long int j = AbsoluteFirst.len - 1; j >= 0; j--)
+            {
+                long long int m = (AbsoluteFirst.arr[j]) * (AbsoluteSecond.arr[i]) + carry;
+                tmp.insert(0, to_string(m % 10));
+                carry = m / 10;
+            }
+            while (carry > 0)
+            {
+                tmp.insert(0, to_string(carry % 10));
+                carry /= 10;
+            }
+            BigNumber res2(tmp);
+            res2.sign = !flag;
+            res1 = res1 + res2;
+        }
+    }
     else
-        temp2.sign = 0;
-
-    for (int j = 0; j < second.len; ++j)
-        temp1 = temp1 + (tempother * (int)second.arr[second.len - j - 1]).shiftL(j);
-
-    for (int i = 1; i <= temp2.len; ++i)
-        temp2.arr[temp2.len - i] = temp1.arr[temp1.len - i];
-
-    temp2.clean();
-    return temp2;
+    {
+        long long int carry = 0;
+        for (long long int i = AbsoluteFirst.len - 1; i >= 0; i--)
+        {
+            string tmp;
+            long long int s = AbsoluteFirst.len - 1 - i;
+            while (s > 0)
+            {
+                tmp.append("0");
+                s--;
+            }
+            for (long long int j = AbsoluteSecond.len - 1; j >= 0; j--)
+            {
+                long long int m = (AbsoluteFirst.arr[i]) * (AbsoluteSecond.arr[j]) + carry;
+                tmp.insert(0, to_string(m % 10));
+                carry = m / 10;
+            }
+            while (carry > 0)
+            {
+                tmp.insert(0, to_string(carry % 10));
+                carry /= 10;
+            }
+            BigNumber res2(tmp);
+            res2.sign = !flag;
+            res1 = res1 + res2;
+        }
+    }
+    return res1;
 }
+
+// Scaller Multiplication :
 
 BigNumber operator*(const BigNumber &other, int num)
 {
@@ -404,100 +468,76 @@ BigNumber operator*(const BigNumber &other, int num)
     if (t > 0)
         temp.arr[temp.len - i] = t;
 
-    temp.clean();
+    clean(temp);
     return temp;
 }
 
-// division
+// Division :
+
 BigNumber operator/(const BigNumber &first, const BigNumber &second)
 {
     if (isNull(second))
-        throw("Zero division is undefined!");
-
-    BigNumber AbsoluteFirst = first;
+    {
+        cout << "ERR";
+        exit(0);
+    }
+    BigNumber AbsoluteFirst = first, AbsoluteSecond = second;
+    bool flag;
+    if ((!AbsoluteFirst.sign && !AbsoluteSecond.sign) || AbsoluteFirst.sign && AbsoluteSecond.sign)
+        flag = 1;
+    else if (!AbsoluteFirst.sign || !AbsoluteSecond.sign)
+        flag = 0;
+    long long int var = 0;
     AbsoluteFirst.sign = 0;
-    BigNumber AbsoluteSecond = second;
     AbsoluteSecond.sign = 0;
 
-    if (AbsoluteSecond > AbsoluteFirst)
-        return 0;
-    if (second == first)
-        return 1;
-    // when XOR of both numbers' sign is T
-    if (AbsoluteFirst == AbsoluteSecond)
-        return BigNumber(-1);
-
-    BigNumber quotient;
-
-    if ((!first.sign && second.sign) || (first.sign && !second.sign))
-        quotient.sign = 1;
-    else
-        quotient.sign = 0;
-
-    int index;
-    quotient.len = 0;
-    int quotientDigit;
-    int *result = new int[first.len];
-    memset(result, 0, first.len);
-    BigNumber t;
-
-    for (index = 0; t * 10 + AbsoluteFirst.arr[index] < AbsoluteSecond; index++)
+    string tmp;
+    for (int i = 0; i < AbsoluteSecond.len; i++)
     {
-        t = t * 10;
-        t = t + AbsoluteFirst.arr[index];
+        tmp += std::to_string(AbsoluteSecond.arr[i]);
     }
+    // AbsoluteFirst .print();
 
-    for (; index < AbsoluteFirst.len; index++)
+    while (AbsoluteFirst > AbsoluteSecond)
     {
-        t = t * 10 + AbsoluteFirst.arr[index];
-        for (quotientDigit = 9; quotientDigit * AbsoluteSecond > t; quotientDigit--)
-            ;
-        t = t - (quotientDigit * AbsoluteSecond);
-        result[quotient.len++] = quotientDigit;
+        long long int n = AbsoluteFirst.len - AbsoluteSecond.len;
+        string a = tmp;
+        // cout << a;
+        long long int summ = 1;
+        for (int i = 1; i < n; i++)
+        {
+            a.append("0");
+            summ *= 10;
+        }
+        BigNumber temp(a);
+        while (AbsoluteFirst > temp || AbsoluteFirst == temp)
+        {
+            AbsoluteFirst = AbsoluteFirst - temp;
+            var += summ;
+        }
     }
-
-    quotient.arr = new int[quotient.len];
-
-    for (index = 0; index < quotient.len; index++)
-        quotient.arr[index] = result[index];
-
-    delete[] result;
-
-    return quotient;
+    BigNumber ans(var);
+    ans.sign = !flag;
+    return ans;
 }
 
-// power
 BigNumber operator^(const BigNumber &first, const BigNumber &second)
 {
-
-    if (second.sign)
-        throw("Negative power not allowed!");
-    if (isNull(first) && isNull(second))
+    long long int var1, var2;
+    string tmp1, tmp2;
+    for (int i = 0; i < first.len; i++)
     {
-        throw("Zero powered to zero is undefined!");
+        tmp1 += std::to_string(first.arr[i]);
     }
-
-    if (isNull(first))
-        return 0;
-
-    if (isNull(second))
-        return 1;
-
-    BigNumber temp1(1);
-
-    BigNumber Exponent, Base;
-    Base = first;
-    Exponent = second;
-    while (!isNull(Exponent))
+    for (int i = 0; i < second.len; i++)
     {
-        if (Exponent.arr[Exponent.len - 1] & 1)
-            temp1 = temp1 * Base;
-        Base = Base * Base;
-        Exponent = Exponent / 2;
+        tmp2 += std::to_string(second.arr[i]);
     }
-
-    return temp1;
+    long long int var = pow(stoi(tmp1), stoi(tmp2));
+    BigNumber res(var);
+    return res;
 }
+
 bool operator>(const BigNumber &other1, const BigNumber &other2)
 {
     if (other1.sign && !other2.sign)
@@ -531,7 +571,7 @@ bool operator>(const BigNumber &other1, const BigNumber &other2)
             if (other1.arr[i] < other2.arr[i])
                 return false;
         }
-        // completely identical
+
         return false;
     }
 }
@@ -570,7 +610,7 @@ bool operator<(const BigNumber &other1, const BigNumber &other2)
             if (other1.arr[i] < other2.arr[i])
                 return true;
         }
-        // completely identical
+
         return false;
     }
 }
@@ -591,17 +631,16 @@ bool operator==(const BigNumber &other1, const BigNumber &other2)
             if (other1.arr[i] != other2.arr[i])
                 return false;
 
-        // completely identical
         return true;
     }
 }
 
-BigNumber BigNumber::shiftL()
+BigNumber BigNumber::shift_Left()
 {
-    return shiftL(1);
+    return shift_Left(1);
 }
 
-BigNumber BigNumber::shiftL(int n)
+BigNumber BigNumber::shift_Left(int n)
 {
     if (n == 0)
         return *this;
@@ -611,18 +650,18 @@ BigNumber BigNumber::shiftL(int n)
     arr = new int[len];
     memset(arr, 0, len);
 
-    for (int i = 0; i < temp.len; ++i)
+    for (int i = 0; i < temp.len; ++i) // n=3 : 1 2 3 0 0 0
         arr[i] = temp.arr[i];
 
     return *this;
 }
 
-BigNumber BigNumber::shiftR()
+BigNumber BigNumber::shift_Right()
 {
-    return shiftR(1);
+    return shift_Right(1);
 }
 
-BigNumber BigNumber::shiftR(int n)
+BigNumber BigNumber::shift_Right(int n)
 {
     if (n == 0)
         return *this;
@@ -631,7 +670,7 @@ BigNumber BigNumber::shiftR(int n)
     delete[] arr;
     arr = new int[len];
 
-    for (int i = len - 1; i >= 0; --i)
+    for (int i = len - 1; i >= 0; --i) // n=1 : 1 2
         arr[i] = temp.arr[i];
 
     return *this;
@@ -645,39 +684,40 @@ bool isNull(const BigNumber &other)
     return true;
 }
 
-void BigNumber::clean()
+void clean(BigNumber &other)
 {
     int *tempArr;
     int i;
 
-    for (i = 0; i < len; ++i)
-        if (arr[i] != 0)
+    for (i = 0; i < other.len; ++i)
+        if (other.arr[i] != 0)
             break;
 
-    len -= i;
-    tempArr = new int[len];
+    other.len -= i;
+    tempArr = new int[other.len];
 
-    for (int j = 1; j <= len; ++j)
-        tempArr[len - j] = arr[len + i - j];
+    for (int j = 1; j <= other.len; ++j)
+        tempArr[other.len - j] = other.arr[other.len + i - j];
 
-    delete[] arr;
-    arr = new int[len];
+    delete[] other.arr;
+    other.arr = new int[other.len];
 
-    for (int j = 0; j < len; ++j)
-        arr[j] = tempArr[j];
+    for (int j = 0; j < other.len; ++j)
+        other.arr[j] = tempArr[j];
 
     delete[] tempArr;
 }
 
 int main()
 {
-    string num1 = "123456789";
-    int num2 = -123456789;
+    string num1 = "43234253712";
+    string num2 = "4623846372";
     BigNumber first(num1);
     BigNumber second(num2);
     BigNumber res;
+
     first.print();
     second.print();
-    res = first * second;
+    res = first / second;
     res.print();
 }
