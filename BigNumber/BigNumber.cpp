@@ -710,14 +710,26 @@ void clean(BigNumber &other)
 
 int main()
 {
-    string num1 = "43234253712";
-    string num2 = "4623846372";
+    string num1 = "-123";
+    string num2 = "4";
     BigNumber first(num1);
     BigNumber second(num2);
     BigNumber res;
 
     first.print();
     second.print();
+    cout<<endl;
+
+    res = first + second;
+    res.print();
+    res = first - second;
+    res.print();
+    res = first * second;
+    res.print();
     res = first / second;
     res.print();
+
+    res = first ^ second;
+    res.print();
+
 }
