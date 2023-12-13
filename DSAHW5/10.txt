@@ -1,0 +1,5 @@
+bool isOperand(char a)
+{
+if(a >= 'a' && a <= 'z' a >= 'A' && a <= 'Z' a >= '0' && a <= '9') return true;
+return false;
+}

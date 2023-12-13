@@ -1,0 +1,8 @@
+Q : we will use these actions n times.
+s.push(x)      -> O(1)
+s.pop(x)       -> O(1)
+s.multipop(k)  -> O(k)
+worst case ?
+
+A : each element takes 2n one for push and one for pop/multipop so :
+    O(2n) -> O(n)

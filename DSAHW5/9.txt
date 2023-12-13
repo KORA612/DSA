@@ -1,0 +1,13 @@
+abc -> only cab not possible
+
+abcd?
+
+a(bcd) -> only a (dbc) not possible
+
+b(acd) -> only b (dca) not possible
+
+c(abd) -> c(abd) , c(adb) , c(dab) not possible
+
+d(abc) -> only d(abc) possible
+
+10 non possible forms : adbc , bdca , cabd , cadb , cdab , dacb , dbac , dbca , dcab , dcba

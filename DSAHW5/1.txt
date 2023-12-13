@@ -1,4 +1,5 @@
-YES
-but instead of print "unbalanced"
-it should print "un"
-because "balanced" would be printed anyway !!!
+NO
+
+(()(
+for a input like this the program will return "balanced" which is wrong 
+this code dosen't check if the stack is empty or not so it can be full of '('

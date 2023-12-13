@@ -9,4 +9,4 @@ for (int i = 0; i < m; i++) // m bar tekrar mishe
 
 GOZINE 2
 
-Σ(0 ta m-1) Σ(0 ta a[i]-1) 1 = O(S+m)
+Σ(0 ta m-1) Σ(0 ta a[i]-1) 1 = Σ(0 ta m-1) a[i] = S -> O(S+m) 
