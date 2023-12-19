@@ -1,8 +1,8 @@
 # In this project we have 2 main modes :
 
-# First : Converting infix formats to postfix ones.
+# First : Converting infix formats to postfix ones and calculate them.
 #   Examples :
-#       (A + B) * (C - D) / E + F  ->  AB+CD-*E/F+
+#       (A+B)*(C-D)/E+F -> AB+CD-*E/F+
 
 # Second : Just like the first one but draw a graph from 0 to 20 using matplotlib.
 #   For that we can just save the result for "x = 0 to 20" in an array called ypoints and plot it!
@@ -15,7 +15,8 @@ def submit1():
     user_input = input_entry.get()
     postfix = infixToPostfix(user_input)
     val = calc(user_input)
-    output_label.config(text="Postfix string is : " + postfix + " = " + str(val))
+    output_label.config(text="Postfix string is : " +
+                        postfix + " = " + str(val))
 
 
 def submit2():
