@@ -2,12 +2,12 @@
 
 # First : Converting infix formats to postfix ones and calculate them.
 #   Examples :
-#       (A+B)*(C-D)/E+F -> AB+CD-*E/F+
+#       (A+B)*(C-D)/E+F -> A B + C D - * E / F +
 
 # Second : Just like the first one but draw a graph from -20 to 20 using matplotlib.
 #   For that we can just save the result for "x = -20 to 20" in an array called ypoints and plot it!
 
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 import tkinter as tk
 
 
@@ -23,10 +23,12 @@ def submit2():
     user_input = input_entry.get()
     postfix = infixToPostfix(user_input)
     output_label.config(text="Postfix string is : " + postfix)
+    xpoints = []
     ypoints = []
     for i in range(-20, 21):
-        ypoints.append(calc(postfix,i))
-    plt.plot(ypoints)
+        xpoints.append(i)
+        ypoints.append(calc(postfix, i))
+    plt.plot(xpoints,ypoints)
     plt.show()
 
 
@@ -50,31 +52,39 @@ def pre(char, top):
 
 def calc(str, x=1):
     stack = []
+    tmp = ""
 
     for char in str:
         # Operands
-        if char.isdigit():  
-            stack.append(int(char))
-        elif char.isalpha(): # Mode2 : It's X
+        if char.isdigit():
+            tmp += char
+
+        elif char.isalpha():  # Mode2 : It's X
             stack.append(x)
 
         # Operation
-        else:  
-            secondOperand = stack.pop()
-            firstOperand = stack.pop()
+        else:
+            if tmp != "":
+                stack.append(int(tmp))  # Extracting Numbers
+                tmp = ""
+            # print(stack)
 
-            if char == '+':
-                stack.append(firstOperand + secondOperand)
-            elif char == '-':
-                stack.append(firstOperand - secondOperand)
-            elif char == '*':
-                stack.append(firstOperand * secondOperand)
-            elif char == '/':
-                stack.append(firstOperand // secondOperand)
-            elif char == '^':
-                stack.append(firstOperand ** secondOperand)
-        # print(stack)
+            if char != " ":
+                secondOperand = stack.pop()
+                firstOperand = stack.pop()
+
+                if char == '+':
+                    stack.append(firstOperand + secondOperand)
+                elif char == '-':
+                    stack.append(firstOperand - secondOperand)
+                elif char == '*':
+                    stack.append(firstOperand * secondOperand)
+                elif char == '/':
+                    stack.append(firstOperand // secondOperand)
+                elif char == '^':
+                    stack.append(firstOperand ** secondOperand)
     return stack.pop()
+
 
 def infixToPostfix(inp):
     # inp = input(">>> Enter Infix string : ")
@@ -83,11 +93,12 @@ def infixToPostfix(inp):
     key = 1
 
     for char in inp:
-        if char.isalpha():
+        if char.isalpha() or char.isdigit():
             # Operand :
             postfixStr += char
 
         else:
+            postfixStr += " "
             # Operation :
             while key:
                 peek = stack.pop()
@@ -98,7 +109,7 @@ def infixToPostfix(inp):
 
                 elif char == ")":
                     while peek != "(":
-                        postfixStr += peek
+                        postfixStr += " " + peek
                         stack.pop()
                         peek = stack.pop()
                         stack.append(peek)
@@ -109,7 +120,7 @@ def infixToPostfix(inp):
                     key = 0
 
                 elif pre(char, peek) == 0:
-                    postfixStr += peek
+                    postfixStr += " " + peek
                     stack.pop()
 
                 # print(stack)
@@ -118,9 +129,9 @@ def infixToPostfix(inp):
     a = stack.pop()
     while a != "0":
         # print(stack)
-        postfixStr += a
+        postfixStr += " " + a
         a = stack.pop()
-    # print(">>> Postfix string is :" + postfixStr)
+    print(">>> Postfix string is :" + postfixStr)
     return postfixStr
 
 
