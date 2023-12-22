@@ -4,17 +4,17 @@
 #   Examples :
 #       (A+B)*(C-D)/E+F -> AB+CD-*E/F+
 
-# Second : Just like the first one but draw a graph from 0 to 20 using matplotlib.
-#   For that we can just save the result for "x = 0 to 20" in an array called ypoints and plot it!
+# Second : Just like the first one but draw a graph from -20 to 20 using matplotlib.
+#   For that we can just save the result for "x = -20 to 20" in an array called ypoints and plot it!
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 import tkinter as tk
 
 
 def submit1():
     user_input = input_entry.get()
     postfix = infixToPostfix(user_input)
-    val = calc(user_input)
+    val = calc(postfix)
     output_label.config(text="Postfix string is : " +
                         postfix + " = " + str(val))
 
@@ -23,10 +23,9 @@ def submit2():
     user_input = input_entry.get()
     postfix = infixToPostfix(user_input)
     output_label.config(text="Postfix string is : " + postfix)
-    '''ypoints = []
-    for i in range(0, 21):
-        ypoints[i] = i #calc(user_input)'''
-    ypoints = [3, 8, 1, 10, 5, 7]
+    ypoints = []
+    for i in range(-20, 21):
+        ypoints.append(calc(postfix,i))
     plt.plot(ypoints)
     plt.show()
 
@@ -49,10 +48,33 @@ def pre(char, top):
         return 0
 
 
-def calc(str):
-    print(str)
-    return 0
+def calc(str, x=1):
+    stack = []
 
+    for char in str:
+        # Operands
+        if char.isdigit():  
+            stack.append(int(char))
+        elif char.isalpha(): # Mode2 : It's X
+            stack.append(x)
+
+        # Operation
+        else:  
+            secondOperand = stack.pop()
+            firstOperand = stack.pop()
+
+            if char == '+':
+                stack.append(firstOperand + secondOperand)
+            elif char == '-':
+                stack.append(firstOperand - secondOperand)
+            elif char == '*':
+                stack.append(firstOperand * secondOperand)
+            elif char == '/':
+                stack.append(firstOperand // secondOperand)
+            elif char == '^':
+                stack.append(firstOperand ** secondOperand)
+        # print(stack)
+    return stack.pop()
 
 def infixToPostfix(inp):
     # inp = input(">>> Enter Infix string : ")
@@ -61,7 +83,7 @@ def infixToPostfix(inp):
     key = 1
 
     for char in inp:
-        if ord(char) >= 48 and ord(char) <= 90:
+        if char.isalpha():
             # Operand :
             postfixStr += char
 
@@ -104,7 +126,7 @@ def infixToPostfix(inp):
 
 root = tk.Tk()
 root.title("Input Window")
-root.geometry("400x200")
+root.geometry("300x150")
 
 input_label = tk.Label(root, text="Enter Infix string :")
 input_label.pack()
