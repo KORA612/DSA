@@ -3,6 +3,7 @@
 # First : Converting infix formats to postfix ones and calculate them.
 #   Examples :
 #       (A+B)*(C-D)/E+F -> A B + C D - * E / F +
+'''NO SPACE'''
 
 # Second : Just like the first one but draw a graph from -20 to 20 using matplotlib.
 #   For that we can just save the result for "x = -20 to 20" in an array called ypoints and plot it!
@@ -56,7 +57,7 @@ def calc(str, x=1):
 
     for char in str:
         # Operands
-        if char.isdigit():
+        if char.isdigit() or char==".":
             tmp += char
 
         elif char.isalpha():  # Mode2 : It's X
@@ -65,7 +66,7 @@ def calc(str, x=1):
         # Operation
         else:
             if tmp != "":
-                stack.append(int(tmp))  # Extracting Numbers
+                stack.append(float(tmp))  # Extracting Numbers
                 tmp = ""
             # print(stack)
 
@@ -93,7 +94,7 @@ def infixToPostfix(inp):
     key = 1
 
     for char in inp:
-        if char.isalpha() or char.isdigit():
+        if char.isalpha() or char.isdigit() or char==".":
             # Operand :
             postfixStr += char
 
