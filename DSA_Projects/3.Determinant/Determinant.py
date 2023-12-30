@@ -24,14 +24,14 @@ def Gaussian_elimination(matrix):
     if n == 1:
         return matrix[0][0]
 
-    for i in range(n):  # diagonal pointer
+    res = matrix[0][0]
+    for i in range(n-1):  # diagonal pointer
         for j in range(i+1, n):  # sub diagonal pointer
             ratio = matrix[j][i] / matrix[i][i]
             for k in range(i, n):  # insider pointer
                 matrix[j][k] -= ratio * matrix[i][k]
-    res = 1
-    for i in range(n):
-        res *= matrix[i][i]
+        res *= matrix[i+1][i+1] 
+
     return res
 
 
