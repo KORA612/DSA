@@ -1,4 +1,4 @@
-# We have to calculate determinant of a given matrix in a .txt format in 3 diffrent ways:
+# This program calculates determinant of a given matrix in a .txt format in 3 diffrent ways:
 #   First  -> Laplace expansion
 #   Second -> Gaussian elimination
 #   Third  -> Omid Rezaifar
@@ -30,9 +30,9 @@ def Gaussian_elimination(matrix):
             ratio = matrix[j][i] / matrix[i][i]
             for k in range(i, n):  # insider pointer
                 matrix[j][k] -= ratio * matrix[i][k]
-        res *= matrix[i+1][i+1] 
+        res *= matrix[i+1][i+1]
 
-    return res
+    return (round(res))
 
 
 def Omid_Rezaifar(matrix):
@@ -41,6 +41,39 @@ def Omid_Rezaifar(matrix):
         return matrix[0][0]
     if n == 2:
         return (matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0])
+    else:
+        subMatrix1 = []
+        for row in matrix[1:n]:
+            subMatrix1.append(row[1:])
+        #print(subMatrix1)
+        subMatrix2 = []
+        for row in matrix[1:n]:
+            subMatrix2.append(row[:-1])
+
+        subMatrix3 = []
+        for row in matrix[:-1]:
+            subMatrix3.append(row[1:])
+
+        subMatrix4 = []
+        for row in matrix[:-1]:
+            subMatrix4.append(row[:-1])
+
+        denominator = []
+        for row in matrix[1:-1]:
+            denominator.append(row[1:-1])
+
+        newMatrix = [
+            [Omid_Rezaifar(subMatrix1), Omid_Rezaifar(subMatrix2)],
+            [Omid_Rezaifar(subMatrix3), Omid_Rezaifar(subMatrix4)],
+        ]
+
+        det = Omid_Rezaifar(denominator)
+
+        if det == 0:
+            print("Div by zero")
+            return
+        else:
+            return round((newMatrix[0][0] * newMatrix[1][1] - newMatrix[0][1] * newMatrix[1][0]) / det)
 
 
 # Main Driver:
@@ -64,10 +97,11 @@ file.close()
 # print(matrix)
 
 if len(matrix) != len(matrix[0]):
-    print("Invalid input!")
+    print("Invalid input! / Undifined")
     exit()
 
 # Output:
+print("-------------------------------------------")
 print("Determinant of the given array is : ")
 print("    Laplace expansion :       ", end="")
 print(Laplace_expansion(matrix))
@@ -75,3 +109,4 @@ print("    Gaussian elimination :  ", end="")
 print(Gaussian_elimination(matrix))
 print("    Omid Rezaifar :           ", end="")
 print(Omid_Rezaifar(matrix))
+print("-------------------------------------------")
