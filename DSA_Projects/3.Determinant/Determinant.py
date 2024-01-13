@@ -45,7 +45,7 @@ def Omid_Rezaifar(matrix):
         subMatrix1 = []
         for row in matrix[1:n]:
             subMatrix1.append(row[1:])
-        #print(subMatrix1)
+        # print(subMatrix1)
         subMatrix2 = []
         for row in matrix[1:n]:
             subMatrix2.append(row[:-1])

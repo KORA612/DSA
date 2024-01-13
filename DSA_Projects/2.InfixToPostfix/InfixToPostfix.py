@@ -26,7 +26,7 @@ def submit2():
     output_label.config(text="Postfix string is : " + postfix)
     xpoints = []
     ypoints = []
-    for i in range(-20, 21):
+    for i in range(0, 21):
         xpoints.append(i)
         ypoints.append(calc(postfix, i))
     plt.plot(xpoints,ypoints)
